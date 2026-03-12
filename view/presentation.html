@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DE DARK — Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --accent: #2a6dff;
+            --accent-dim: rgba(42,109,255,0.18);
+            --black: #000;
+            --surface: #07090d;
+            --border: rgba(255,255,255,0.08);
+            --dim: rgba(255,255,255,0.38);
+        }
+
+        html, body { height: 100%; overflow: hidden; background: #000; cursor: none; }
+
+        .cursor { position: fixed; width: 7px; height: 7px; background: #fff; border-radius: 50%; pointer-events: none; z-index: 99999; mix-blend-mode: difference; transform: translate(-50%,-50%); }
+        .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%,-50%); transition: width .3s, height .3s, border-color .3s; }
+        .cursor-ring.hovered { width: 48px; height: 48px; border-color: var(--accent); }
+
+        /* ── IFRAME ── */
+        .site-frame {
+            position: fixed;
+            inset: 0;
+            width: 100%; height: 100%;
+            border: none;
+            transition: filter 0.5s ease, transform 0.5s cubic-bezier(.23,1,.32,1);
+        }
+        .site-frame.dimmed {
+            filter: brightness(0.18) blur(4px);
+            transform: scale(0.96);
+        }
+
+        /* ── BOTTOM TOGGLE BAR ── */
+        .toggle-bar {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 40px 0;
+            height: 64px;
+            background: linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+            pointer-events: none;
+        }
+        .toggle-pill {
+            pointer-events: all;
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: rgba(8,11,18,0.95);
+            border: 1px solid rgba(255,255,255,0.13);
+            backdrop-filter: blur(24px);
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.8), 0 0 0 1px rgba(42,109,255,0.1);
+            transition: box-shadow 0.3s, border-color 0.3s;
+        }
+        .toggle-pill:hover {
+            border-color: rgba(42,109,255,0.35);
+            box-shadow: 0 0 60px rgba(0,0,0,0.9), 0 0 20px rgba(42,109,255,0.12);
+        }
+
+        .pill-brand {
+            padding: 0 22px;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 17px;
+            letter-spacing: 0.22em;
+            color: rgba(255,255,255,0.55);
+            border-right: 1px solid var(--border);
+            height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pill-brand span { color: var(--accent); }
+
+        .pill-sep { width: 1px; height: 44px; background: var(--border); }
+
+        .pill-btn {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 0 20px;
+            height: 44px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--dim);
+            background: transparent;
+            border: none;
+            border-right: 1px solid var(--border);
+            cursor: none;
+            transition: color 0.25s, background 0.25s;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .pill-btn:last-child { border-right: none; }
+        .pill-btn:hover { color: #fff; background: rgba(255,255,255,0.04); }
+        .pill-btn.primary { color: var(--accent); }
+        .pill-btn.primary:hover { background: var(--accent-dim); color: #fff; }
+        .pill-btn svg { flex-shrink: 0; opacity: 0.7; transition: opacity 0.25s; }
+        .pill-btn:hover svg { opacity: 1; }
+
+        .pill-open-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0 24px;
+            height: 44px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.28em;
+            text-transform: uppercase;
+            color: #fff;
+            background: var(--accent);
+            border: none;
+            cursor: none;
+            transition: background 0.25s, letter-spacing 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .pill-open-btn::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.08);
+            opacity: 0;
+            transition: opacity 0.25s;
+        }
+        .pill-open-btn:hover::before { opacity: 1; }
+        .pill-open-btn svg { flex-shrink: 0; transition: transform 0.3s cubic-bezier(.23,1,.32,1); }
+        .pill-open-btn.open svg { transform: rotate(180deg); }
+
+        /* ── OVERLAY ── */
+        .overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 500;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 80px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.35s ease;
+        }
+        .overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        /* ── PANEL ── */
+        .panel {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(5,7,12,0.97);
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(40px);
+            transform: translateY(24px);
+            transition: transform 0.45s cubic-bezier(.23,1,.32,1);
+            box-shadow: 0 -20px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(42,109,255,0.08);
+            overflow: hidden;
+        }
+        .overlay.visible .panel { transform: translateY(0); }
+
+        .panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(to right, transparent 0%, var(--accent) 30%, var(--accent) 70%, transparent 100%);
+            opacity: 0.7;
+        }
+
+        /* Panel header */
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 32px;
+            border-bottom: 1px solid var(--border);
+        }
+        .panel-header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .panel-eyebrow {
+            font-size: 9px;
+            letter-spacing: 0.4em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+        .panel-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 22px;
+            letter-spacing: 0.14em;
+            color: #fff;
+        }
+        .panel-sep { width: 1px; height: 28px; background: var(--border); }
+        .panel-url {
+            font-size: 10px;
+            letter-spacing: 0.15em;
+            color: rgba(255,255,255,0.2);
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .panel-close {
+            width: 32px; height: 32px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border);
+            background: transparent;
+            cursor: none;
+            color: var(--dim);
+            transition: border-color 0.2s, color 0.2s;
+        }
+        .panel-close:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
+
+        /* Grid of actions */
+        .panel-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 28px 16px;
+            background: var(--surface);
+            cursor: none;
+            text-decoration: none;
+            color: inherit;
+            transition: background 0.25s;
+            position: relative;
+            overflow: hidden;
+        }
+        .grid-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transition: transform 0.3s cubic-bezier(.23,1,.32,1);
+        }
+        .grid-item:hover { background: rgba(42,109,255,0.05); }
+        .grid-item:hover::after { transform: scaleX(1); }
+
+        .grid-icon {
+            width: 44px; height: 44px;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid var(--border);
+            background: rgba(255,255,255,0.03);
+            transition: border-color 0.25s, background 0.25s;
+            color: var(--dim);
+        }
+        .grid-item:hover .grid-icon {
+            border-color: rgba(42,109,255,0.4);
+            background: rgba(42,109,255,0.08);
+            color: var(--accent);
+        }
+        .grid-label {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--dim);
+            text-align: center;
+            transition: color 0.25s;
+        }
+        .grid-item:hover .grid-label { color: rgba(255,255,255,0.8); }
+        .grid-item.featured .grid-icon { border-color: rgba(42,109,255,0.3); color: var(--accent); background: var(--accent-dim); }
+        .grid-item.featured .grid-label { color: rgba(255,255,255,0.7); }
+
+        /* Info row */
+        .panel-info {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 32px;
+        }
+        .info-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 10px;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.2);
+        }
+        .info-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent);
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%) translateY(10px);
+            background: rgba(5,7,12,0.96);
+            border: 1px solid rgba(42,109,255,0.3);
+            padding: 11px 26px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 11px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.6);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .ta { color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<iframe class="site-frame" id="siteFrame" src="/"></iframe>
+
+<!-- BOTTOM BAR -->
+<div class="toggle-bar">
+    <div class="toggle-pill">
+        <div class="pill-brand">DE <span>DARK</span></div>
+
+        <a class="pill-btn" href="https://dedark.kaistudio.pp.ua" target="_blank">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Website
+        </a>
+
+        <a class="pill-btn" href="/presentation/download">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download
+        </a>
+
+        <div class="pill-btn" onclick="copyLink()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copy URL
+        </div>
+
+        <div class="pill-btn" onclick="openFullscreen()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            Fullscreen
+        </div>
+
+        <button class="pill-open-btn" id="openBtn" onclick="toggleMenu()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            All Tools
+        </button>
+    </div>
+</div>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay">
+    <div class="panel">
+        <div class="panel-header">
+            <div class="panel-header-left">
+                <div>
+                    <div class="panel-eyebrow">Presentation Mode</div>
+                    <div class="panel-title">DE DARK — Tools</div>
+                </div>
+                <div class="panel-sep"></div>
+                <div class="panel-url">dedark.kaistudio.pp.ua</div>
+            </div>
+            <button class="panel-close" onclick="closeMenu()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+
+        <div class="panel-grid">
+
+            <a class="grid-item featured" href="https://dedark.kaistudio.pp.ua" target="_blank">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                </div>
+                <div class="grid-label">Kai Studio</div>
+            </a>
+
+            <a class="grid-item" href="/" onclick="closeMenu()">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div class="grid-label">Homepage</div>
+            </a>
+
+            <a class="grid-item" href="/error?code=404" target="_blank">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                </div>
+                <div class="grid-label">Error Page</div>
+            </a>
+
+            <a class="grid-item" href="/presentation/download">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                </div>
+                <div class="grid-label">Download ZIP</div>
+            </a>
+
+            <div class="grid-item" onclick="copyLink()">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div class="grid-label">Copy URL</div>
+            </div>
+
+            <div class="grid-item" onclick="openFullscreen()">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                </div>
+                <div class="grid-label">Fullscreen</div>
+            </div>
+
+            <div class="grid-item" onclick="reloadFrame()">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                </div>
+                <div class="grid-label">Reload Site</div>
+            </div>
+
+            <a class="grid-item" href="https://github.com/kai-studios" target="_blank">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                </div>
+                <div class="grid-label">GitHub</div>
+            </a>
+
+            <a class="grid-item" href="https://kaistudio.pp.ua/contacts" target="_blank">
+                <div class="grid-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                </div>
+                <div class="grid-label">Contact</div>
+            </a>
+
+            <div class="grid-item" onclick="toggleTheme()">
+                <div class="grid-icon" id="themeIcon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                </div>
+                <div class="grid-label">Dim Preview</div>
+            </div>
+
+        </div>
+
+        <div class="panel-info">
+            <div class="info-tag">
+                <div class="info-dot"></div>
+                Presentation Mode Active
+            </div>
+            <div class="info-tag">De Dark — Dark Time Series — 1 of 33 — Kai Studio 2025</div>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const cur = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e=>{mx=e.clientX;my=e.clientY;});
+    (function loop(){
+        cur.style.left=mx+'px'; cur.style.top=my+'px';
+        rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12;
+        ring.style.left=rx+'px'; ring.style.top=ry+'px';
+        requestAnimationFrame(loop);
+    })();
+    document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+        el.addEventListener('mouseenter',()=>ring.classList.add('hovered'));
+        el.addEventListener('mouseleave',()=>ring.classList.remove('hovered'));
+    });
+
+    let open=false, dimmed=false;
+    const overlay=document.getElementById('overlay');
+    const frame=document.getElementById('siteFrame');
+    const openBtn=document.getElementById('openBtn');
+
+    function toggleMenu(){
+        open=!open;
+        overlay.classList.toggle('visible',open);
+        if(open) frame.classList.add('dimmed');
+        else if(!dimmed) frame.classList.remove('dimmed');
+        openBtn.classList.toggle('open',open);
+    }
+    function closeMenu(){ open=false; overlay.classList.remove('visible'); if(!dimmed)frame.classList.remove('dimmed'); openBtn.classList.remove('open'); }
+    overlay.addEventListener('click',e=>{if(e.target===overlay)closeMenu();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape'&&open)closeMenu();});
+
+    function copyLink(){
+        navigator.clipboard.writeText('https://dedark.kaistudio.pp.ua').then(()=>showToast('<span class="ta">✓</span> URL copied to clipboard'));
+        closeMenu();
+    }
+    function openFullscreen(){
+        closeMenu();
+        const el=document.documentElement;
+        if(el.requestFullscreen)el.requestFullscreen();
+    }
+    function reloadFrame(){
+        frame.src=frame.src;
+        closeMenu();
+        showToast('<span class="ta">↺</span> Site reloaded');
+    }
+    function toggleTheme(){
+        dimmed=!dimmed;
+        frame.classList.toggle('dimmed',dimmed||open);
+        showToast(dimmed?'<span class="ta">◑</span> Preview dimmed':'<span class="ta">◕</span> Preview restored');
+    }
+
+    let tt;
+    function showToast(msg){
+        const t=document.getElementById('toast');
+        t.innerHTML=msg; t.classList.add('show');
+        clearTimeout(tt); tt=setTimeout(()=>t.classList.remove('show'),2800);
+    }
+
+    setTimeout(()=>showToast('<span class="ta">⚡</span> Presentation mode — tools available below'),1000);
+</script>
+</body>
+</html>
