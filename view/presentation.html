@@ -23,7 +23,6 @@
         .cursor-ring { position: fixed; width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; pointer-events: none; z-index: 99998; transform: translate(-50%,-50%); transition: width .3s, height .3s, border-color .3s; }
         .cursor-ring.hovered { width: 48px; height: 48px; border-color: var(--accent); }
 
-        /* ── IFRAME ── */
         .site-frame {
             position: fixed;
             inset: 0;
@@ -36,7 +35,6 @@
             transform: scale(0.96);
         }
 
-        /* ── BOTTOM TOGGLE BAR ── */
         .toggle-bar {
             position: fixed;
             bottom: 0; left: 0; right: 0;
@@ -140,7 +138,6 @@
         .pill-open-btn svg { flex-shrink: 0; transition: transform 0.3s cubic-bezier(.23,1,.32,1); }
         .pill-open-btn.open svg { transform: rotate(180deg); }
 
-        /* ── OVERLAY ── */
         .overlay {
             position: fixed;
             inset: 0;
@@ -158,7 +155,6 @@
             pointer-events: all;
         }
 
-        /* ── PANEL ── */
         .panel {
             width: 100%;
             max-width: 900px;
@@ -181,7 +177,6 @@
             opacity: 0.7;
         }
 
-        /* Panel header */
         .panel-header {
             display: flex;
             align-items: center;
@@ -224,7 +219,6 @@
         }
         .panel-close:hover { border-color: rgba(255,255,255,0.3); color: #fff; }
 
-        /* Grid of actions */
         .panel-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -286,7 +280,6 @@
         .grid-item.featured .grid-icon { border-color: rgba(42,109,255,0.3); color: var(--accent); background: var(--accent-dim); }
         .grid-item.featured .grid-label { color: rgba(255,255,255,0.7); }
 
-        /* Info row */
         .panel-info {
             display: flex;
             align-items: center;
@@ -309,7 +302,6 @@
             box-shadow: 0 0 6px var(--accent);
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 100px;
@@ -405,7 +397,6 @@
 
 <iframe class="site-frame" id="siteFrame" src="/"></iframe>
 
-<!-- BOTTOM BAR -->
 <div class="toggle-bar">
     <div class="toggle-pill">
         <div class="pill-brand">DE <span>DARK</span></div>
@@ -437,7 +428,6 @@
     </div>
 </div>
 
-<!-- OVERLAY -->
 <div class="overlay" id="overlay">
     <div class="panel">
         <div class="panel-header">

@@ -18,7 +18,7 @@ router.get('/presentation', (req, res) => {
 });
 
 router.get('/presentation/download', (req, res) => {
-    res.redirect('https://assets.kaistudio.pp.ua/dedark');
+    res.redirect('https://assets.kaistudio.pp.ua/de-dark');
 });
 
 app.use('/', router);
